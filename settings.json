@@ -1,0 +1,7 @@
+{
+  "pull_strength": 1,
+  "pull_interval": 11,
+  "fire_key": "Left Mouse Button",
+  "toggle_key": "F4",
+  "active": true
+}
