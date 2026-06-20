@@ -1,0 +1,16 @@
+# Build output
+dist/
+build/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Settings (user-specific)
+settings.json
+
+# IDE
+.vscode/
+.idea/
