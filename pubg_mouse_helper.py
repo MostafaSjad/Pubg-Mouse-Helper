@@ -80,7 +80,16 @@ for i in range(1, 13):
     KEY_MAP[f"F{i}"] = 0x70 + (i - 1)
 
 # ─── Settings ──────────────────────────────────────────────────────────────
-SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.json")
+# When running as a PyInstaller .exe, __file__ points to a temp folder.
+# Use sys.executable (the .exe path) instead, so settings.json is saved next to the EXE.
+if getattr(sys, 'frozen', False):
+    # Running as compiled EXE
+    APP_DIR = os.path.dirname(sys.executable)
+else:
+    # Running as Python script
+    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+SETTINGS_FILE = os.path.join(APP_DIR, "settings.json")
 
 DEFAULT_SETTINGS = {
     "pull_strength": 3,       # How many pixels to move down per tick (dy)
