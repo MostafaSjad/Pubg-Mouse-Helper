@@ -13,6 +13,31 @@ import threading
 import time
 import ctypes
 from ctypes import wintypes
+import subprocess
+
+# ─── Admin Elevation ───────────────────────────────────────────────────────
+def is_admin():
+    """Check if the current process has admin privileges."""
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except Exception:
+        return False
+
+def run_as_admin():
+    """Re-launch the current script/exe with admin privileges via UAC."""
+    if getattr(sys, 'frozen', False):
+        # Running as EXE
+        executable = sys.executable
+        params = ""
+    else:
+        # Running as Python script
+        executable = sys.executable
+        params = f'"{os.path.abspath(__file__)}"'
+
+    ctypes.windll.shell32.ShellExecuteW(
+        None, "runas", executable, params, None, 1
+    )
+    sys.exit(0)
 
 # ─── Win32 API Constants & Functions ────────────────────────────────────────
 user32 = ctypes.windll.user32
@@ -171,6 +196,17 @@ class PUBGMouseHelper:
             text="Recoil Compensation Tool",
             font=("Segoe UI", 9),
             fg="#8899aa",
+            bg="#16213e",
+        ).pack()
+
+        # Admin status indicator
+        admin_text = "🛡️ Running as Admin" if is_admin() else "⚠️ Not Admin (may not work with games)"
+        admin_color = "#28a745" if is_admin() else "#ff6b6b"
+        tk.Label(
+            title_frame,
+            text=admin_text,
+            font=("Segoe UI", 8),
+            fg=admin_color,
             bg="#16213e",
         ).pack()
 
@@ -457,6 +493,10 @@ class PUBGMouseHelper:
 
 # ─── Entry Point ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    # Auto-elevate to admin if not already
+    if not is_admin():
+        run_as_admin()
+
     root = tk.Tk()
     app = PUBGMouseHelper(root)
     root.mainloop()
